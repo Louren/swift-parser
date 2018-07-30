@@ -140,6 +140,7 @@ class Text(object):
         self.ordering_institution = None
         self.sender_correspondent = None
         self.receiver_correspondent = None
+        self.intermediary = None
         self.third_reimbursement_institution = None
         self.intermediary_institution = None
         self.account_with_institution = None
