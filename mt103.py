@@ -87,7 +87,10 @@ class Text(object):
     REGEX = re.compile(
         "^"
         "(:20:(?P<transaction_reference>[^\s:]+)\s*)?"
+        "(:13C:(?P<time_indication>[^\s:]+)\s*)?"
         "(:23B:(?P<bank_operation_code>[^\s:]+)\s*)?"
+        "(:23E:(?P<instruction_code>[^\s:]+)\s*)?"
+        "(:26T:(?P<transaction_type_code>[^\s:]+)\s*)?"
         "(:32A:"
             "(?P<value_date_year>\d\d)"  # NOQA
             "(?P<value_date_month>\d\d)"
@@ -99,17 +102,22 @@ class Text(object):
             "(?P<original_ordered_currency>[A-Z]{3})"
             "(?P<original_ordered_amount>[\d,]+)"
         "\s*)?"
+        "(:36:(?P<exchange_rate>([\d,]+)\s*)?)?"
         "(:50[AFK]:(?P<ordering_customer>.*?)\s*(?=(:\d\d)?))?"
+        "(:51A:(?P<sending_institution>.*?)\s*(?=(:\d\d)?))?"
         "(:52[AD]:(?P<ordering_institution>.*?)\s*(?=(:\d\d)?))?"
         "(:53[ABD]:(?P<sender_correspondent>[^\s:]*)\s*)?"
         "(:54[ABD]:(?P<receiver_correspondent>.*?)\s*(?=(:\d\d)?))?"
-        "(:56[ACD]:(?P<intermediary>.*?)\s*(?=(:\d\d)?))?"
+        "(:55[ABD]:(?P<third_reimbursement_institution>.*?)\s*(?=(:\d\d)?))?"
+        "(:56[ACD]:(?P<intermediary_institution>.*?)\s*(?=(:\d\d)?))?"
         "(:57[ABCD]:(?P<account_with_institution>.*?)\s*(?=(:\d\d)?))?"
-        "(:59A?:(?P<beneficiary>.*?)\s*(?=(:\d\d)?))?"
+        "(:59?:(?P<beneficiary>.*?)\s*(?=(:\d\d)?))?"
         "(:70:(?P<remittance_information>.*?)\s*(?=(:\d\d)?))?"
         "(:71A:(?P<details_of_charges>.*?)\s*(?=(:\d\d)?))?"
+        "(:71F:(?P<senders_charges>.*?)\s*(?=(:\d\d)?))?"
+        "(:71G:(?P<receivers_charges>.*?)\s*(?=(:\d\d)?))?"
         "(:72:(?P<sender_to_receiver_information>.*?)\s*(?=(:\d\d)?))?"
-        "(:77A:(?P<regulatory_reporting>.*?)\s*(?=(:\d\d)?))?"
+        "(:77B:(?P<regulatory_reporting>.*?)\s*(?=(:\d\d)?))?"
         "$",
         re.DOTALL
     )
@@ -119,20 +127,28 @@ class Text(object):
         self.raw = raw
 
         self.transaction_reference = None
+        self.time_indication = None
         self.bank_operation_code = None
+        self.instruction_code = None
+        self.transaction_type_code = None
         self.interbank_settled_currency = None
         self.interbank_settled_amount = None
         self.original_ordered_currency = None
         self.original_ordered_amount = None
+        self.sending_institution = None
         self.ordering_customer = None
         self.ordering_institution = None
         self.sender_correspondent = None
         self.receiver_correspondent = None
-        self.intermediary = None
+        self.third_reimbursement_institution = None
+        self.intermediary_institution = None
         self.account_with_institution = None
         self.beneficiary = None
+        self.exchange_rate = None
         self.remittance_information = None
         self.details_of_charges = None
+        self.senders_charges = None
+        self.receivers_charges = None
         self.sender_to_receiver_information = None
         self.regulatory_reporting = None
         self.date = None
